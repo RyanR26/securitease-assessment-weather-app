@@ -1,4 +1,4 @@
-import { Layout } from './components'
+import { Button, Layout } from './components'
 
 function App() {
   return (
@@ -10,6 +10,15 @@ function App() {
         <p className="text-lg text-gray-600">
           Get accurate weather forecasts for any location
         </p>
+        <Button className="mt-4" variant="primary">
+          Get Started
+        </Button>
+         <Button className="mt-4" variant="secondary">
+          Get Started
+        </Button>
+         <Button className="mt-4" variant="danger">
+          Get Started
+        </Button>
       </div>
     </Layout>
   )
