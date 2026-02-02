@@ -1,15 +1,17 @@
+import { Layout } from './components'
+
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+    <Layout>
       <div className="text-center">
-        <h1 className="text-5xl font-bold text-gray-900 mb-4">
-          Weather Forecast App
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          Welcome to Weather Forecast
         </h1>
-        <p className="text-xl text-gray-600">
-          Welcome to the weather forecast application
+        <p className="text-lg text-gray-600">
+          Get accurate weather forecasts for any location
         </p>
       </div>
-    </div>
+    </Layout>
   )
 }
 
