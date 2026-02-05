@@ -1,8 +1,8 @@
-import { CurrentWeather, ForecastDay, WeatherResponse, WeatherError } from '@/types'
+import { CurrentWeather, ForecastDay, WeatherError } from '@/types'
 
 interface ImportMetaEnv {
-  readonly VITE_WEATHERSTACK_KEY: string
-  readonly VITE_WEATHERSTACK_BASE_URL: string
+  readonly VITE_WEATHER_API_KEY: string
+  readonly VITE_WEATHER_API_BASE_URL: string
 }
 
 /**
@@ -10,7 +10,7 @@ interface ImportMetaEnv {
  */
 function getApiKey(): string {
   const env = (import.meta as any).env as ImportMetaEnv
-  return env.VITE_WEATHERSTACK_KEY
+  return env.VITE_WEATHER_API_KEY
 }
 
 /**
@@ -18,7 +18,7 @@ function getApiKey(): string {
  */
 function getBaseUrl(): string {
   const env = (import.meta as any).env as ImportMetaEnv
-  return env.VITE_WEATHERSTACK_BASE_URL || 'http://api.weatherstack.com'
+  return env.VITE_WEATHER_API_BASE_URL || 'http://api.weatherapi.com/v1'
 }
 
 /**
@@ -28,7 +28,7 @@ function validateApiKey(): void {
   const apiKey = getApiKey()
   if (!apiKey) {
     throw new Error(
-      'Weather API key is not configured. Please set VITE_WEATHERSTACK_KEY in your .env file.'
+      'Weather API key is not configured. Please set VITE_WEATHER_API_KEY in your .env file.'
     )
   }
 }
@@ -36,36 +36,37 @@ function validateApiKey(): void {
 /**
  * Transforms raw API response to CurrentWeather type
  */
-function transformCurrentWeather(data: any): CurrentWeather {
+export function transformCurrentWeather(data: any): CurrentWeather {
   return {
-    temperature: data.temperature,
-    feelsLike: data.feelslike,
-    condition: data.weather_descriptions?.[0] || 'Unknown',
-    icon: data.weather_icons?.[0] || '',
+    temperature: data.temp_c,
+    feelsLike: data.feelslike_c,
+    condition: data.condition?.text || 'Unknown',
+    icon: data.condition?.icon ? `https:${data.condition.icon}` : '',
     humidity: data.humidity,
-    windSpeed: data.wind_speed,
+    windSpeed: data.wind_kph,
     windDirection: data.wind_degree,
-    pressure: data.pressure,
-    visibility: data.visibility,
-    uvIndex: data.uv_index,
+    pressure: data.pressure_mb,
+    visibility: data.vis_km,
+    uvIndex: data.uv,
   }
 }
 
 /**
  * Transforms raw API response to ForecastDay type
  */
-function transformForecastDay(data: any): ForecastDay {
+export function transformForecastDay(data: any): ForecastDay {
+  const day = data.day
   return {
     date: data.date,
-    maxTemp: data.maxtemp,
-    minTemp: data.mintemp,
-    avgTemp: data.avgtemp,
-    condition: data.description || 'Unknown',
-    icon: data.icon || '',
-    precipitationChance: data.chanceofrainmm || 0,
-    precipitationAmount: data.totalsnowinches || 0,
-    humidity: data.avghumidity,
-    windSpeed: data.avgwind_kmph,
+    maxTemp: day.maxtemp_c,
+    minTemp: day.mintemp_c,
+    avgTemp: day.avgtemp_c,
+    condition: day.condition?.text || 'Unknown',
+    icon: day.condition?.icon ? `https:${day.condition.icon}` : '',
+    precipitationChance: day.daily_chance_of_rain || 0,
+    precipitationAmount: day.totalprecip_mm || 0,
+    humidity: day.avghumidity,
+    windSpeed: day.maxwind_kph,
   }
 }
 
@@ -78,15 +79,15 @@ function transformForecastDay(data: any): ForecastDay {
 export async function getCurrentWeather(
   location: string,
   signal?: AbortSignal
-): Promise<CurrentWeather> {
+): Promise<CurrentWeather | null> {
   validateApiKey()
 
   try {
     const baseUrl = getBaseUrl()
     const apiKey = getApiKey()
-    const url = new URL(`${baseUrl}/current`)
-    url.searchParams.append('access_key', apiKey)
-    url.searchParams.append('query', location)
+    const url = new URL(`${baseUrl}/current.json`)
+    url.searchParams.append('key', apiKey)
+    url.searchParams.append('q', location)
 
     const response = await fetch(url.toString(), { signal })
 
@@ -99,7 +100,7 @@ export async function getCurrentWeather(
     if (data.error) {
       const error: WeatherError = {
         code: data.error.code,
-        message: data.error.info,
+        message: data.error.message,
         statusCode: response.status,
       }
       throw new Error(error.message)
@@ -107,8 +108,7 @@ export async function getCurrentWeather(
 
     return transformCurrentWeather(data.current)
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to fetch current weather'
-    throw new Error(`Weather service error: ${message}`)
+      return weatherServiceError(error)
   }
 }
 
@@ -119,23 +119,20 @@ export async function getCurrentWeather(
  * @param signal - Optional AbortSignal to cancel the request
  * @returns Forecast data
  */
-export async function getForecast(
+export async function getForecastWeather(
   location: string,
   days: number = 7,
   signal?: AbortSignal
-): Promise<ForecastDay[]> {
+): Promise<ForecastDay[] | null> {
   validateApiKey()
-
-  // Clamp days between 1 and 10
-  const forecastDays = Math.max(1, Math.min(10, days))
 
   try {
     const baseUrl = getBaseUrl()
     const apiKey = getApiKey()
-    const url = new URL(`${baseUrl}/forecast`)
-    url.searchParams.append('access_key', apiKey)
-    url.searchParams.append('query', location)
-    url.searchParams.append('forecast_days', forecastDays.toString())
+    const url = new URL(`${baseUrl}/forecast.json`)
+    url.searchParams.append('key', apiKey)
+    url.searchParams.append('q', location)
+    url.searchParams.append('days', days.toString())
 
     const response = await fetch(url.toString(), { signal })
 
@@ -148,15 +145,83 @@ export async function getForecast(
     if (data.error) {
       const error: WeatherError = {
         code: data.error.code,
-        message: data.error.info,
+        message: data.error.message,
         statusCode: response.status,
       }
       throw new Error(error.message)
     }
+    
+    return data?.forecast?.forecastday?.map(transformForecastDay) || []
 
-    return data?.forecast?.forecastday.map(transformForecastDay)
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to fetch forecast'
-    throw new Error(`Weather service error: ${message}`)
+      return weatherServiceError(error)
   }
+}
+
+/**
+ * Fetches historical weather for a location
+ * @param location - City name or coordinates
+ * @param days - Number of days to look back (default 7)
+ * @param signal - Optional AbortSignal to cancel the request
+ * @returns Historical forecast data
+ */
+export async function getHistoricalWeather(
+  location: string,
+  days: number = 7,
+  signal?: AbortSignal
+): Promise<ForecastDay[] | null> {
+  validateApiKey()
+
+  try {
+    const baseUrl = getBaseUrl()
+    const apiKey = getApiKey()
+    const url = new URL(`${baseUrl}/history.json`)
+    
+    const endDate = new Date()
+    endDate.setDate(endDate.getDate() - 1) // yesterday
+    const startDate = new Date()
+    startDate.setDate(endDate.getDate() - (days - 1))
+    
+    // Format YYYY-MM-DD
+    const formatDate = (date: Date) => date.toISOString().split('T')[0]
+
+    url.searchParams.append('key', apiKey)
+    url.searchParams.append('q', location)
+    url.searchParams.append('dt', formatDate(startDate))
+    url.searchParams.append('end_dt', formatDate(endDate))
+
+    const response = await fetch(url.toString(), { signal })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    if (data.error) {
+      const error: WeatherError = {
+        code: data.error.code,
+        message: data.error.message,
+        statusCode: response.status,
+      }
+      throw new Error(error.message)
+    }
+    
+    return data?.forecast?.forecastday?.map(transformForecastDay) || []
+
+  } catch (error) {
+    return weatherServiceError(error)
+  }
+}
+
+function weatherServiceError(error: any): null | never {
+  if ((error as Error).name === 'AbortError') {
+      console.log('Fetch aborted, no error thrown to caller')
+      // Return null to indicate graceful handling,
+      // preventing the error from propagating further.
+      return null
+    } 
+
+    const message = error instanceof Error ? error.message : 'Failed to fetch current weather'
+    throw new Error(`Weather service error: ${message}`)
 }
