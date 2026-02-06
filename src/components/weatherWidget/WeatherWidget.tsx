@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { getCurrentWeather, getForecastWeather, getHistoricalWeather} from '../services/weatherService'
-import { CurrentWeather, ForecastDay } from '../types'
-import { Card } from './Card'
-import { LoadingSpinner } from './LoadingSpinner'
-import { ErrorMessage } from './ErrorMessage'
+import { getCurrentWeather, getForecastWeather, getHistoricalWeather} from '../../services/weatherService'
+import { CurrentWeather, ForecastDay } from '../../types'
+import { Card } from '../Card'
+import { LoadingSpinner } from '../LoadingSpinner'
+import { ErrorMessage } from '../ErrorMessage'
+import { CurrentWeatherDisplay } from './CurrentWeatherDisplay'
+import { formatDateToWeekday, formatDateDdMmYyyy } from '@/utils/date'
 
 interface WeatherWidgetProps {
   location: string
 }
 
-const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
+export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
 
   const [current, setCurrent] = useState<CurrentWeather | null>(null)
   const [forecast, setForecast] = useState<ForecastDay[] | null>(null)
@@ -92,33 +94,29 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
 
   return (
       <div className="space-y-8">
-        <Card title={`Current Weather in ${location}`} subtitle={current.condition}>
-          <div className="grid grid-cols-2 gap-4">
-            <p>
-              <strong>Temperature:</strong> {current.temperature}°C
-            </p>
-            <p>
-              <strong>Feels Like:</strong> {current.feelsLike}°C
-            </p>
-            <p>
-              <strong>Humidity:</strong> {current.humidity}%
-            </p>
-            <p>
-              <strong>Wind:</strong> {current.windSpeed} kph
-            </p>
+        <div className='grid grid-cols-2 gap-4'>
+          <div className='col-span-1'>
+            <CurrentWeatherDisplay weather={current} />
           </div>
-        </Card>
+
+          <div className='col-span-1'>
+            <div>Region: {current.location}</div>
+            <div>Country: {current.country}</div>
+            <div>Latitude: {current.latitude}</div>
+            <div>Longitude: {current.longitude}</div>
+            <div>Local Time: {current.localTime}</div>
+          </div>
+        </div>
+
 
         {forecast && forecast.length > 0 && (
           <Card title="3-Day Forecast">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {forecast.map(day => (
                 <div key={day.date} className="rounded-lg border p-4">
-                <p className='text-sm'>{day.date}</p>
+                <p className='text-sm'>{formatDateDdMmYyyy(day.date)}</p>
                   <p className="font-bold">
-                    {new Date(day.date + 'T00:00:00').toLocaleDateString(undefined, {
-                      weekday: 'long',
-                    })}
+                    {formatDateToWeekday(day.date)}
                   </p>
                   <img src={day.icon} alt={day.condition} className="mx-auto" />
                   <p className="text-center">{day.condition}</p>
@@ -139,12 +137,9 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {history.map(day => (
                 <div key={day.date} className="rounded-lg border p-4">
-                    <p className='text-sm'>{day.date}</p>
+                    <p className='text-sm'>{formatDateDdMmYyyy(day.date)}</p>
                     <p className="font-bold">
-                        {new Date(day.date + 'T00:00:00').toLocaleDateString(undefined, {
-                        weekday: 'long',
-                        })}
-                        
+                        {formatDateToWeekday(day.date)}
                     </p>
                     <img src={day.icon} alt={day.condition} className="mx-auto" />
                     <p className="text-center">{day.condition}</p>
@@ -162,5 +157,3 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
       </div>
   )
 }
-
-export default WeatherWidget
