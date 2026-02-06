@@ -19,10 +19,10 @@ export const Location: React.FC<LocationProps> = ({ weather, onLocationChange })
   }
 
   return (
-    <div className="p-12">
+    <div>
       <div className="mb-6">
         <h2 className="font-bold text-lg mb-4">Location Search</h2>
-        <form onSubmit={handleSearch} className="flex gap-2">
+        <form className="flex gap-2">
           <input
             type="text"
             value={searchInput}

@@ -22,7 +22,7 @@ export const CurrentWeatherDisplay: React.FC<CurrentWeatherProps> = ({ weather }
                         <img src={weather.icon} alt={weather.condition} className="mx-auto" />
                         <p className="text-center font-bold">{weather.condition}</p>
                     </div>
-                    <div className="text-6xl font-bold mt-5 flex items-start justify-center gap-2">
+                    <div className="text-6xl font-bold mt-3 flex items-start justify-center gap-2">
                         {weather.temperature} 
                         <span className='text-2xl'>°C</span>
                     </div>
