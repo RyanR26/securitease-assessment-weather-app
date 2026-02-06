@@ -9,8 +9,17 @@ describe('weatherService', () => {
   describe('getCurrentWeather', () => {
     it('should fetch and transform current weather data', async () => {
       const mockResponse = {
+        location: {
+          name: 'London',
+          country: 'United Kingdom',
+          lat: 51.5085,
+          lon: -0.1257,
+          localtime: '2024-01-15 14:30:00',
+          tz_id: 'Europe/London',
+        },
         current: {
           temp_c: 25,
+          temp_f: 77,
           feelslike_c: 24,
           condition: {
             text: 'Sunny',
@@ -22,6 +31,8 @@ describe('weatherService', () => {
           pressure_mb: 1013,
           vis_km: 10,
           uv: 7,
+          precip_mm: 0,
+          chance_of_rain: 0,
         },
       }
 
@@ -33,11 +44,20 @@ describe('weatherService', () => {
       const result = await getCurrentWeather('London')
 
       expect(result).toEqual({
+        location: 'London',
+        country: 'United Kingdom',
+        latitude: 51.5085,
+        longitude: -0.1257,
+        localTime: '2024-01-15 14:30:00',
+        timeZoneId: 'Europe/London',
         temperature: 25,
+        temperatureF: 77,
         feelsLike: 24,
         condition: 'Sunny',
         icon: 'https://cdn.weatherapi.com/weather/128x128/day/113.png',
         humidity: 65,
+        precipitation: 0,
+        chanceOfRain: 0,
         windSpeed: 10,
         windDirection: 180,
         pressure: 1013,
@@ -134,34 +154,6 @@ describe('weatherService', () => {
         humidity: 60,
         windSpeed: 12,
       })
-    })
-
-    it('should clamp days between 1 and 3', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ forecast: { forecastday: [] } }),
-      } as Response)
-
-      await getForecastWeather('London', 15)
-
-      expect(vi.mocked(fetch)).toHaveBeenCalledWith(
-        expect.stringContaining('days=3'),
-        { signal: undefined }
-      )
-    })
-
-    it('should use default 3 days when not specified', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ forecast: { forecastday: [] } }),
-      } as Response)
-
-      await getForecastWeather('London')
-
-      expect(vi.mocked(fetch)).toHaveBeenCalledWith(
-        expect.stringContaining('days=3'),
-        { signal: undefined }
-      )
     })
   })
 

@@ -37,17 +37,28 @@ function validateApiKey(): void {
  * Transforms raw API response to CurrentWeather type
  */
 export function transformCurrentWeather(data: any): CurrentWeather {
+  const location = data.location
+  const current = data.current
   return {
-    temperature: data.temp_c,
-    feelsLike: data.feelslike_c,
-    condition: data.condition?.text || 'Unknown',
-    icon: data.condition?.icon ? `https:${data.condition.icon}` : '',
-    humidity: data.humidity,
-    windSpeed: data.wind_kph,
-    windDirection: data.wind_degree,
-    pressure: data.pressure_mb,
-    visibility: data.vis_km,
-    uvIndex: data.uv,
+    location: location?.name || 'Unknown',
+    country: location?.country || 'Unknown',
+    latitude: location?.lat || 0,
+    longitude: location?.lon || 0,
+    localTime: location?.localtime || 'Unknown',
+    timeZoneId: location?.tz_id || 'Unknown',
+    temperature: current.temp_c,
+    temperatureF: current.temp_f,
+    feelsLike: current.feelslike_c,
+    condition: current.condition?.text || 'Unknown',
+    icon: current.condition?.icon ? `https:${current.condition.icon}` : '',
+    humidity: current.humidity,
+    precipitation: current.precip_mm,
+    chanceOfRain: current.chance_of_rain,
+    windSpeed: current.wind_kph,
+    windDirection: current.wind_degree,
+    pressure: current.pressure_mb,
+    visibility: current.vis_km,
+    uvIndex: current.uv,
   }
 }
 
@@ -106,9 +117,10 @@ export async function getCurrentWeather(
       throw new Error(error.message)
     }
 
-    return transformCurrentWeather(data.current)
+    return transformCurrentWeather(data)
+
   } catch (error) {
-      return weatherServiceError(error)
+    return weatherServiceError(error)
   }
 }
 
@@ -154,7 +166,7 @@ export async function getForecastWeather(
     return data?.forecast?.forecastday?.map(transformForecastDay) || []
 
   } catch (error) {
-      return weatherServiceError(error)
+    return weatherServiceError(error)
   }
 }
 

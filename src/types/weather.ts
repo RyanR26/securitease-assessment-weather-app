@@ -2,8 +2,22 @@
  * Current weather conditions for a location
  */
 export interface CurrentWeather {
+  /** Location name */
+  location: string
+  /** Location country */
+  country: string
+  /** Latitude coordinate */
+  latitude: number
+  /** Longitude coordinate */
+  longitude: number
+  /** Local time in the location */
+  localTime: string
+  /** Time zone Id */
+  timeZoneId: string
   /** Temperature in Celsius */
   temperature: number
+  /** Temperature in Fahrenheit */
+  temperatureF: number
   /** "Feels like" temperature in Celsius */
   feelsLike: number
   /** Weather condition (e.g., "Sunny", "Rainy", "Cloudy") */
@@ -12,6 +26,10 @@ export interface CurrentWeather {
   icon: string
   /** Humidity percentage (0-100) */
   humidity: number
+  /** Precipitation in mm */
+  precipitation: number
+  /** Chance of rain (0-100) */
+  chanceOfRain: number
   /** Wind speed in km/h */
   windSpeed: number
   /** Wind direction in degrees (0-360) */
