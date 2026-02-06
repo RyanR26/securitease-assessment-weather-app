@@ -11,7 +11,7 @@ function App() {
         <p className="text-lg text-gray-600">
           Get accurate weather forecasts for any location
         </p> */}
-        <WeatherWidget location="New York" />
+        <WeatherWidget initialLocation="New York" />
       </div>
     </Layout>
   )

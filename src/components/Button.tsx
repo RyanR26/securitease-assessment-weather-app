@@ -37,7 +37,7 @@ export function Button({
   return (
     <button
       disabled={disabled || isLoading}
-      className={combinedClassName}
+      className={`${combinedClassName} cursor-pointer` }
       {...props}
     >
       {isLoading ? 'Loading...' : children}

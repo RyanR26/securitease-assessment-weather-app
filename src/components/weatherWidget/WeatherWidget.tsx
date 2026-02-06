@@ -5,14 +5,15 @@ import { Card } from '../Card'
 import { LoadingSpinner } from '../LoadingSpinner'
 import { ErrorMessage } from '../ErrorMessage'
 import { CurrentWeatherDisplay } from './CurrentWeatherDisplay'
+import { Location } from './Location'
 import { formatDateToWeekday, formatDateDdMmYyyy } from '@/utils/date'
 
 interface WeatherWidgetProps {
-  location: string
+  initialLocation?: string
 }
 
-export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
-
+export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = '' }) => {
+  const [location, setLocation] = useState<string>(initialLocation)
   const [current, setCurrent] = useState<CurrentWeather | null>(null)
   const [forecast, setForecast] = useState<ForecastDay[] | null>(null)
   const [history, setHistory] = useState<ForecastDay[] | null>(null)
@@ -76,9 +77,9 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
     }
   }, [location]) // Re-run the effect when the location prop changes
 
-  if (loading) {
-    return <LoadingSpinner message={`Loading weather for ${location}...`} />
-  }
+  // if (loading) {
+  //   return <LoadingSpinner message={`Loading weather for ${location}...`} />
+  // }
 
   if (error) {
     return <ErrorMessage title="Failed to fetch weather" message={error.message} />
@@ -96,18 +97,14 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ location }) => {
       <div className="space-y-8">
         <div className='grid grid-cols-2 gap-4'>
           <div className='col-span-1'>
-            <CurrentWeatherDisplay weather={current} />
+            <div className="rounded-xl border-2 border-yellow-500 p-6">
+              <CurrentWeatherDisplay weather={current} />
+            </div>
           </div>
-
           <div className='col-span-1'>
-            <div>Region: {current.location}</div>
-            <div>Country: {current.country}</div>
-            <div>Latitude: {current.latitude}</div>
-            <div>Longitude: {current.longitude}</div>
-            <div>Local Time: {current.localTime}</div>
+            <Location weather={current} onLocationChange={setLocation} />
           </div>
         </div>
-
 
         {forecast && forecast.length > 0 && (
           <Card title="3-Day Forecast">

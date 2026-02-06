@@ -1,0 +1,60 @@
+import React, { useState } from 'react'
+import { CurrentWeather } from '../../types'
+import { Button } from '../Button'
+
+interface LocationProps {
+  weather: CurrentWeather
+  onLocationChange: (location: string) => void
+}
+
+export const Location: React.FC<LocationProps> = ({ weather, onLocationChange }) => {
+  const [searchInput, setSearchInput] = useState<string>('')
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchInput.trim()) {
+      onLocationChange(searchInput.trim())
+      setSearchInput('')
+    }
+  }
+
+  return (
+    <div className="p-12">
+      <div className="mb-6">
+        <h2 className="font-bold text-lg mb-4">Location Search</h2>
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Enter location..."
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <Button variant='primary' size='md' onClick={handleSearch}>
+            Search
+          </Button>
+        </form>
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="font-bold text-md mb-3">Current Location</h3>
+        <div className="flex justify-between border-b border-gray-300 py-2">
+          <dt className="font-semibold">Location:</dt>
+          <dd>{weather.location}</dd>
+        </div>
+        <div className="flex justify-between border-b border-gray-300 py-2">
+          <dt className="font-semibold">Country:</dt>
+          <dd>{weather.country}</dd>
+        </div>
+        <div className="flex justify-between border-b border-gray-300 py-2">
+          <dt className="font-semibold">Latitude:</dt>
+          <dd>{weather.latitude.toFixed(4)}</dd>
+        </div>
+        <div className="flex justify-between border-b border-gray-300 py-2">
+          <dt className="font-semibold">Longitude:</dt>
+          <dd>{weather.longitude.toFixed(4)}</dd>
+        </div>
+      </div>
+    </div>
+  )
+}
