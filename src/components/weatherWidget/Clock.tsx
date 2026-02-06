@@ -3,9 +3,10 @@ import { getCurrentTimeByTimeZone } from '@/utils/date'
 
 interface ClockProps {
     timeZone: string
+    classNames?: string
 }
 
-export const Clock: React.FC<ClockProps> = ({ timeZone }) => {
+export const Clock: React.FC<ClockProps> = ({ timeZone, classNames }) => {
     const [time, setTime] = useState<string>(() => getCurrentTimeByTimeZone(timeZone))
 
     useEffect(() => {
@@ -16,5 +17,5 @@ export const Clock: React.FC<ClockProps> = ({ timeZone }) => {
         return () => clearInterval(interval)
     }, [timeZone])
 
-    return <div>{time}</div>
+    return <div className={`${classNames}`}>{time}</div>
 }

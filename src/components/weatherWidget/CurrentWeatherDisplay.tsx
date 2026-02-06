@@ -11,27 +11,30 @@ export const CurrentWeatherDisplay: React.FC<CurrentWeatherProps> = ({ weather }
 
     return  (
         <div className="rounded-xl border-2 border-yellow-500 p-6">
-            <div className='grid grid-cols-2 gap-1'>
+            <div className='grid grid-cols-2 gap-8'>
                 <div className="flex flex-col justify-between gap-4">
                     <div className='flex flex-col items-center'>
                         <p className='text-sm'>{formatDateDdMmYyyy(new Date())}</p>
-                        <h2 className='font-bold'>Current Weather</h2>
-                        <img src={weather.icon} alt={weather.condition} className="mx-auto" />
-                        <p className="text-center">{weather.condition}</p>
+                        <p className='font-bold'>Today</p>
+                        <p className="text-xs bg-gray-200 p-1 rounded-lg text-center text-gray-700 mt-2">Current Weather</p>
                     </div>
-                    <div>
+                    <div className="flex flex-col items-center border-b border-t border-gray-300 pb-4">
+                        <div className=' rounded-lg p-2 flex flex-col items-center w-8/10'>
+                            <img src={weather.icon} alt={weather.condition} className="mx-auto" />
+                            <p className="text-center font-bold">{weather.condition}</p>
+                        </div>
                         <div className="text-6xl font-bold mt-5 flex items-start justify-center gap-2">
                             {weather.temperature} 
                             <span className='text-2xl'>°C</span>
                         </div>
-                        <div className="text-3xl font-bold mt-5 flex items-start justify-center gap-2">
+                        <div className="text-3xl font-bold mt-1 flex items-start justify-center gap-2">
                             {weather.temperatureF}
                             <span className='text-lg'>°F</span>
                         </div>
                     </div>
                     <div>
-                        <p className='text-sm'>Time in {weather.location}</p>
-                        <Clock timeZone={weather.timeZoneId} />
+                        <p className='text-xs mb-1'>Time in {weather.location}</p>
+                        <Clock timeZone={weather.timeZoneId} classNames='text-sm' />
                     </div>
                 </div>
                 <div className="text-xs font-bold">

@@ -1,5 +1,5 @@
 import { Layout } from './components'
-import WeatherWidget from './components/weatherWidget/WeatherWidget'
+import { WeatherWidget } from './components/weatherWidget/WeatherWidget'
 
 function App() {
   return (
