@@ -54,6 +54,12 @@ export interface ForecastDay {
   minTemp: number
   /** Average temperature in Celsius */
   avgTemp: number
+  /** Maximum temperature in Fahrenheit */
+  maxTempF: number
+  /** Minimum temperature in Fahrenheit */
+  minTempF: number
+  /** Average temperature in Fahrenheit */
+  avgTempF: number
   /** Weather condition */
   condition: string
   /** Weather condition icon/code */
@@ -66,6 +72,12 @@ export interface ForecastDay {
   humidity: number
   /** Average wind speed in km/h */
   windSpeed: number
+  /** Maximum wind speed in km/h */
+  maxWindSpeed: number
+  /** Visibility in km */
+  visibility: number
+  /** UV index */
+  uvIndex: number
 }
 
 /**

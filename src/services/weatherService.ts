@@ -72,12 +72,18 @@ export function transformForecastDay(data: any): ForecastDay {
     maxTemp: day.maxtemp_c,
     minTemp: day.mintemp_c,
     avgTemp: day.avgtemp_c,
+    maxTempF: day.maxtemp_f,
+    minTempF: day.mintemp_f,
+    avgTempF: day.avgtemp_f,
     condition: day.condition?.text || 'Unknown',
     icon: day.condition?.icon ? `https:${day.condition.icon}` : '',
     precipitationChance: day.daily_chance_of_rain || 0,
     precipitationAmount: day.totalprecip_mm || 0,
     humidity: day.avghumidity,
     windSpeed: day.maxwind_kph,
+    maxWindSpeed: day.maxwind_kph,
+    visibility: day.avgvis_km || 0,
+    uvIndex: day.uv || 0,
   }
 }
 
