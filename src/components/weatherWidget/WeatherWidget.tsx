@@ -6,7 +6,7 @@ import { LoadingSpinner } from '../LoadingSpinner'
 import { ErrorMessage } from '../ErrorMessage'
 import { CurrentWeatherDisplay } from './CurrentWeatherDisplay'
 import { Location } from './Location'
-import { formatDateToWeekday, formatDateDdMmYyyy } from '@/utils/date'
+import { ForecastCarousel } from './ForecastCarousel'
 
 interface WeatherWidgetProps {
   initialLocation?: string
@@ -95,60 +95,22 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
 
   return (
       <div className="space-y-8">
-        <div className='grid grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div className='col-span-1'>
-            <div className="rounded-xl border-2 border-yellow-500 p-6">
+            <div className="bg-white rounded-xl border-2 border-yellow-500 p-6">
               <CurrentWeatherDisplay weather={current} />
             </div>
           </div>
           <div className='col-span-1'>
-            <Location weather={current} onLocationChange={setLocation} />
+            <div className="p-5 md:p-15">
+              <Location weather={current} onLocationChange={setLocation} />
+            </div>
           </div>
         </div>
 
-        {forecast && forecast.length > 0 && (
-          <Card title="3-Day Forecast">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              {forecast.map(day => (
-                <div key={day.date} className="rounded-lg border p-4">
-                <p className='text-sm'>{formatDateDdMmYyyy(day.date)}</p>
-                  <p className="font-bold">
-                    {formatDateToWeekday(day.date)}
-                  </p>
-                  <img src={day.icon} alt={day.condition} className="mx-auto" />
-                  <p className="text-center">{day.condition}</p>
-                  <p>
-                    <strong>Max:</strong> {day.maxTemp}°C
-                  </p>
-                  <p>
-                    <strong>Min:</strong> {day.minTemp}°C
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Card>
-        )}
-
-        {history && history.length > 0 && (
-          <Card title="Past 3 Days">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              {history.map(day => (
-                <div key={day.date} className="rounded-lg border p-4">
-                    <p className='text-sm'>{formatDateDdMmYyyy(day.date)}</p>
-                    <p className="font-bold">
-                        {formatDateToWeekday(day.date)}
-                    </p>
-                    <img src={day.icon} alt={day.condition} className="mx-auto" />
-                    <p className="text-center">{day.condition}</p>
-                    <p>
-                        <strong>Max:</strong> {day.maxTemp}°C
-                    </p>
-                    <p>
-                        <strong>Min:</strong> {day.minTemp}°C
-                    </p>
-                </div>
-              ))}
-            </div>
+        {history && forecast && (
+          <Card title="Weather Timeline">
+            <ForecastCarousel days={[...(history || []), ...(forecast || [])]} />
           </Card>
         )}
       </div>
