@@ -1,2 +1,2 @@
-export type { CurrentWeather, ForecastDay, WeatherResponse, WeatherError } from './weather'
+export type { CurrentWeather, ForecastDay, HistoricalWeatherData, WeatherResponse, WeatherError } from './weather'
 

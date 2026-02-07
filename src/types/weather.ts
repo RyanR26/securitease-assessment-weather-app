@@ -81,6 +81,13 @@ export interface ForecastDay {
 }
 
 /**
+ * Type representing exactly 5 days of historical weather data
+ * Used to enforce that filterHistoricalDataByLocalTime receives the correct amount of data
+ */
+export type HistoricalWeatherData = [ForecastDay, ForecastDay, ForecastDay, ForecastDay, ForecastDay]
+
+
+/**
  * Complete weather response for a location
  */
 export interface WeatherResponse {

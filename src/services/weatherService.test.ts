@@ -1,9 +1,14 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { getCurrentWeather, getForecastWeather, getHistoricalWeather } from './weatherService'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { getCurrentWeather, getForecastWeather, getHistoricalWeather, filterHistoricalDataByLocalTime } from './weatherService'
+import type { ForecastDay } from '@/types'
 
 describe('weatherService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   describe('getCurrentWeather', () => {
@@ -171,6 +176,9 @@ describe('weatherService', () => {
   describe('getHistoricalWeather', () => {
     it('should fetch and transform historical weather data', async () => {
       const mockResponse = {
+        location: {
+          localtime: '2024-01-10 12:00:00',
+        },
         forecast: {
           forecastday: [
             {
@@ -227,9 +235,35 @@ describe('weatherService', () => {
     })
 
     it('should use default 7 days when not specified', async () => {
+      const mockResponse = {
+        location: { localtime: '2024-01-15 12:00:00' },
+        forecast: {
+          forecastday: [
+            {
+              date: '2024-01-09',
+              day: {
+                maxtemp_c: 20,
+                mintemp_c: 15,
+                avgtemp_c: 17,
+                maxtemp_f: 68,
+                mintemp_f: 59,
+                avgtemp_f: 63,
+                condition: { text: 'Cloudy', icon: '//cdn.weatherapi.com/weather/128x128/day/122.png' },
+                daily_chance_of_rain: 30,
+                totalprecip_mm: 5,
+                avghumidity: 70,
+                maxwind_kph: 15,
+                avgvis_km: 8,
+                uv: 3,
+              },
+            },
+          ],
+        },
+      }
+
       vi.mocked(fetch).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ forecast: { forecastday: [] } }),
+        json: async () => mockResponse,
       } as Response)
 
       await getHistoricalWeather('London')
@@ -270,6 +304,157 @@ describe('weatherService', () => {
       await expect(getHistoricalWeather('London')).rejects.toThrow(
         'Weather service error'
       )
+    })
+  })
+
+  describe('filterHistoricalDataByLocalTime', () => {
+    beforeEach(() => {
+      // Mock the current date to 2024-01-15 for consistent testing
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2024-01-15T12:00:00Z'))
+    })
+
+    const mockForecastDays = [
+      {
+        date: '2024-01-10',
+        maxTemp: 20,
+        minTemp: 15,
+        avgTemp: 17,
+        maxTempF: 68,
+        minTempF: 59,
+        avgTempF: 63,
+        condition: 'Cloudy',
+        icon: 'https://cdn.weatherapi.com/weather/128x128/day/122.png',
+        precipitationChance: 30,
+        precipitationAmount: 5,
+        humidity: 70,
+        windSpeed: 15,
+        maxWindSpeed: 15,
+        visibility: 8,
+        uvIndex: 3,
+      },
+      {
+        date: '2024-01-11',
+        maxTemp: 22,
+        minTemp: 16,
+        avgTemp: 19,
+        maxTempF: 72,
+        minTempF: 61,
+        avgTempF: 66,
+        condition: 'Sunny',
+        icon: 'https://cdn.weatherapi.com/weather/128x128/day/113.png',
+        precipitationChance: 10,
+        precipitationAmount: 0,
+        humidity: 60,
+        windSpeed: 12,
+        maxWindSpeed: 12,
+        visibility: 10,
+        uvIndex: 7,
+      },
+      {
+        date: '2024-01-12',
+        maxTemp: 24,
+        minTemp: 18,
+        avgTemp: 21,
+        maxTempF: 75,
+        minTempF: 64,
+        avgTempF: 70,
+        condition: 'Rainy',
+        icon: 'https://cdn.weatherapi.com/weather/128x128/day/302.png',
+        precipitationChance: 80,
+        precipitationAmount: 10,
+        humidity: 80,
+        windSpeed: 20,
+        maxWindSpeed: 20,
+        visibility: 5,
+        uvIndex: 2,
+      },
+      {
+        date: '2024-01-13',
+        maxTemp: 23,
+        minTemp: 17,
+        avgTemp: 20,
+        maxTempF: 73,
+        minTempF: 63,
+        avgTempF: 68,
+        condition: 'Partly Cloudy',
+        icon: 'https://cdn.weatherapi.com/weather/128x128/day/116.png',
+        precipitationChance: 20,
+        precipitationAmount: 2,
+        humidity: 65,
+        windSpeed: 10,
+        maxWindSpeed: 10,
+        visibility: 9,
+        uvIndex: 5,
+      },
+      {
+        date: '2024-01-14',
+        maxTemp: 25,
+        minTemp: 19,
+        avgTemp: 22,
+        maxTempF: 77,
+        minTempF: 66,
+        avgTempF: 72,
+        condition: 'Clear',
+        icon: 'https://cdn.weatherapi.com/weather/128x128/day/113.png',
+        precipitationChance: 0,
+        precipitationAmount: 0,
+        humidity: 55,
+        windSpeed: 8,
+        maxWindSpeed: 8,
+        visibility: 10,
+        uvIndex: 8,
+      },
+    ] as [ForecastDay, ForecastDay, ForecastDay, ForecastDay, ForecastDay]
+
+    it('should return last 3 days when localTime is in the future', () => {
+      const result = filterHistoricalDataByLocalTime(mockForecastDays, '2024-01-16 12:00:00')
+
+      expect(result).toHaveLength(3)
+      expect(result[0].date).toBe('2024-01-12')
+      expect(result[1].date).toBe('2024-01-13')
+      expect(result[2].date).toBe('2024-01-14')
+    })
+
+    it('should return first 3 days when localTime is in the past', () => {
+      const result = filterHistoricalDataByLocalTime(mockForecastDays, '2024-01-08 12:00:00')
+
+      expect(result).toHaveLength(3)
+      expect(result[0].date).toBe('2024-01-10')
+      expect(result[1].date).toBe('2024-01-11')
+    })
+
+    it('should return middle 3 days when localTime is today', () => {
+      const result = filterHistoricalDataByLocalTime(mockForecastDays, '2024-01-15 12:00:00')
+
+      expect(result).toHaveLength(3)
+      expect(result[0].date).toBe('2024-01-11')
+      expect(result[1].date).toBe('2024-01-12')
+      expect(result[2].date).toBe('2024-01-13')
+    })
+
+    it('should return correct data structure for future dates', () => {
+      const result = filterHistoricalDataByLocalTime(mockForecastDays, '2024-01-16 12:00:00')
+
+      // When localTime is in the future, returns last 3 days: [2024-01-12, 2024-01-13, 2024-01-14]
+      expect(result[0]).toEqual({
+        date: '2024-01-12',
+        maxTemp: 24,
+        minTemp: 18,
+        avgTemp: 21,
+        maxTempF: 75,
+        minTempF: 64,
+        avgTempF: 70,
+        condition: 'Rainy',
+        icon: 'https://cdn.weatherapi.com/weather/128x128/day/302.png',
+        precipitationChance: 80,
+        precipitationAmount: 10,
+        humidity: 80,
+        windSpeed: 20,
+        maxWindSpeed: 20,
+        visibility: 5,
+        uvIndex: 2,
+      })
     })
   })
 })

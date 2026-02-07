@@ -1,4 +1,5 @@
-import { CurrentWeather, ForecastDay, WeatherError } from '@/types'
+import { CurrentWeather, ForecastDay, HistoricalWeatherData, WeatherError } from '@/types'
+import { isAtLeastOneDayInFuture, isAtLeastOneDayInPast } from '@/utils/date'
 
 interface ImportMetaEnv {
   readonly VITE_WEATHER_API_KEY: string
@@ -88,6 +89,36 @@ export function transformForecastDay(data: any): ForecastDay {
 }
 
 /**
+ * Filters historical weather data based on the local time
+ * Returns the most relevant 3 days of historical data depending on whether the local time is in the past, present, or future
+ * @param data - Tuple of exactly 5 already-transformed ForecastDay objects (historical data)
+ * @param localTime - Local time string in format "YYYY-MM-DD HH:MM:SS" or "YYYY-MM-DD"
+ * @returns Filtered array of 3 ForecastDay objects
+ * @example
+ * // If localTime is in the future, returns the last 3 days
+ * filterHistoricalDataByLocalTime(historicalData, '2024-01-16 12:00:00') // [day2, day3, day4]
+ * // If localTime is in the past, returns the first 3 days
+ * filterHistoricalDataByLocalTime(historicalData, '2024-01-08 12:00:00') // [day0, day1, day2]
+ * // If localTime is today, returns the middle 3 days
+ * filterHistoricalDataByLocalTime(historicalData, '2024-01-15 12:00:00') // [day1, day2, day3]
+ */
+export function filterHistoricalDataByLocalTime(data: HistoricalWeatherData, localTime: string): ForecastDay[] {
+    // Extract just the date part (YYYY-MM-DD) from localTime
+    const localDate = localTime.split(' ')[0]
+
+    // return last 3 days if in the future
+    if (isAtLeastOneDayInFuture(localDate)) {
+      return data.slice(-3)
+    }
+    // first 3 if in the past
+    else if (isAtLeastOneDayInPast(localDate)) {
+      return data.slice(0, 3)
+    }
+    // middle 3 days
+    return data.slice(1, -1)
+}
+
+/**
  * Fetches current weather for a location
  * @param location - City name or coordinates
  * @param signal - Optional AbortSignal to cancel the request
@@ -169,7 +200,11 @@ export async function getForecastWeather(
       throw new Error(error.message)
     }
     
-    return data?.forecast?.forecastday?.map(transformForecastDay) || []
+    if (!data?.forecast?.forecastday.length) {
+      throw new Error('Missing forecast data')
+    }
+
+    return data.forecast.forecastday.map(transformForecastDay)
 
   } catch (error) {
     return weatherServiceError(error)
@@ -195,8 +230,10 @@ export async function getHistoricalWeather(
     const apiKey = getApiKey()
     const url = new URL(`${baseUrl}/history.json`)
     
+    // To accomodate different timezones, we need to get the current date in the location's timezone
+    // To solve this we get historical data for 1 day before and 1 day after and then we can filter the data by timezone
     const endDate = new Date()
-    endDate.setDate(endDate.getDate() - 1) // yesterday
+    endDate.setDate(endDate.getDate()) // yesterday
     const startDate = new Date()
     startDate.setDate(endDate.getDate() - (days - 1))
     
@@ -224,8 +261,12 @@ export async function getHistoricalWeather(
       }
       throw new Error(error.message)
     }
-    
-    return data?.forecast?.forecastday?.map(transformForecastDay) || []
+
+    if (!data?.forecast?.forecastday.length) {
+      throw new Error('Missing forecast data')
+    }
+
+    return data.forecast.forecastday.map(transformForecastDay)
 
   } catch (error) {
     return weatherServiceError(error)
