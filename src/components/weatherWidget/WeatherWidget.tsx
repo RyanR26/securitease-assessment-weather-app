@@ -139,38 +139,40 @@ export function WeatherWidget ({ initialLocation = 'London' }: WeatherWidgetProp
   }
 
   return (
-      <div className='space-y-8'>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <div className='col-span-1 order-last md:order-first'>
-            <div className='bg-white rounded-xl border-2 border-yellow-500 p-6'>
-              {selectedDay ? (
-                <ForecastWeatherDisplay day={selectedDay} />
-              ) : (
-                <CurrentWeatherDisplay weather={current!} />
-              )}
-            </div>
-          </div>
-          <div className='col-span-1'>
-            <div className='p-5 md:p-15'>
-              <LocationSearch
-                weather={current!}
-                onLocationChange={setLocation}
-                fetchingNewData={fetchingNewData}
-                fetchingDataError={!!error && hasInitialData}
-              />
-            </div>
+    <div className='space-y-8 animate-fade-in'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+        <div className='col-span-1 order-last md:order-first'>
+          <div className='bg-white rounded-xl border-2 border-yellow-500 p-6'>
+            {selectedDay ? (
+              <ForecastWeatherDisplay day={selectedDay} />
+            ) : (
+              <CurrentWeatherDisplay weather={current!} />
+            )}
           </div>
         </div>
-        {history && forecast && (
-          <Card title='Weather Timeline'>
-            <WeatherTimeline
+        <div className='col-span-1'>
+          <div className='pb-5 px-5 lg:px-12 xl:px-15'>
+            <LocationSearch
+              weather={current!}
+              onLocationChange={setLocation}
+              fetchingNewData={fetchingNewData}
+              fetchingDataError={!!error && hasInitialData}
+            />
+          </div>
+        </div>
+      </div>
+      {history && forecast && (
+        <Card title='Weather Timeline'>
+          <div className='animate-short-slide-up-fade-in' key={location}>
+              <WeatherTimeline
               days={[...(history || []), ...(forecast || [])]}
               selectedDate={selectedDay?.date}
               dateAtLocation={dateAtLocation}
               onDaySelect={handleDaySelect}
             />
-          </Card>
-        )}
-      </div>
+          </div>
+        </Card>
+      )}
+    </div>
   )
 }

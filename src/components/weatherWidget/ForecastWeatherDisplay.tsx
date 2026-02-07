@@ -8,7 +8,7 @@ interface ForecastWeatherDisplayProps {
 export function ForecastWeatherDisplay({ day }: ForecastWeatherDisplayProps) {
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-8' key={day.date}>
       <div className='flex flex-col justify-between gap-4'>
         <div className='flex flex-col items-center'>
           <p className='text-sm'>{formatDateDdMmYyyy(day.date)}</p>
@@ -18,15 +18,15 @@ export function ForecastWeatherDisplay({ day }: ForecastWeatherDisplayProps) {
           </p>
         </div>
         <div className='flex flex-col items-center border-b border-t border-gray-300 pb-4'>
-          <div className='rounded-lg p-2 flex flex-col items-center w-8/10'>
+          <div className='rounded-lg p-2 flex flex-col items-center w-8/10 animate-short-slide-up-fade-in'>
             <img src={day.icon} alt={day.condition} className='mx-auto' />
             <p className='text-center font-bold'>{day.condition}</p>
           </div>
-          <div className='text-6xl font-bold mt-3 flex items-start justify-center gap-2'>
+          <div className='text-6xl font-bold mt-3 flex items-start justify-center gap-2 animate-fade-in'>
             {day.avgTemp}
             <span className='text-2xl'>°C</span>
           </div>
-          <div className='text-3xl font-bold mt-1 flex items-start justify-center gap-2'>
+          <div className='text-3xl font-bold text-gray-500 mt-1 flex items-start justify-center gap-2 animate-fade-in'>
             {day.avgTempF}
             <span className='text-lg'>°F</span>
           </div>
@@ -42,43 +42,43 @@ export function ForecastWeatherDisplay({ day }: ForecastWeatherDisplayProps) {
         <dl className='flex flex-col gap-4'>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>Avg Temperature:</dt>
-            <dd>{day.avgTemp}°C</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.avgTemp}°C</dd>
           </div>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>Max Temperature:</dt>
-            <dd>{day.maxTemp}°C</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.maxTemp}°C</dd>
           </div>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>Min Temperature:</dt>
-            <dd>{day.minTemp}°C</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.minTemp}°C</dd>
           </div>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>Humidity:</dt>
-            <dd>{day.humidity}%</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.humidity}%</dd>
           </div>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>Precipitation:</dt>
-            <dd>{day.precipitationAmount} mm</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.precipitationAmount} mm</dd>
           </div>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>Chance of Rain:</dt>
-            <dd>{day.precipitationChance}%</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.precipitationChance}%</dd>
           </div>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>Wind Speed:</dt>
-            <dd>{day.windSpeed} kph</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.windSpeed} kph</dd>
           </div>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>Max Wind Speed:</dt>
-            <dd>{day.maxWindSpeed} kph</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.maxWindSpeed} kph</dd>
           </div>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>UV Index:</dt>
-            <dd>{day.uvIndex} {day.uvIndex > 5 ? 'High' : 'Low'}</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.uvIndex} {day.uvIndex > 5 ? 'High' : 'Low'}</dd>
           </div>
           <div className='flex justify-between border-b border-gray-300 py-1'>
             <dt>Visibility:</dt>
-            <dd>{day.visibility} km</dd>
+            <dd className='animate-short-slide-right-fade-in'>{day.visibility} km</dd>
           </div>
         </dl>
       </div>
