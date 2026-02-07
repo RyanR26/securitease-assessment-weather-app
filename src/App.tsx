@@ -5,14 +5,14 @@ function App() {
   return (
     <Layout>
       <div className="text-center">
-        <header className='mb-10'>
-          <h1 className="text-2xl font-bold text-gray-900">
+        <div className='mb-10'>
+          <h2 className="text-2xl font-bold text-gray-900">
              Welcome to Weather Forecast
-          </h1>
+          </h2>
           <p className="text-lg text-gray-600">
             Get accurate weather forecasts for any location
           </p>
-        </header>
+        </div>
         <WeatherWidget initialLocation="London" />
       </div>
     </Layout>

@@ -4,6 +4,7 @@ import { filterHistoricalDataByLocalTime } from '../../services/weatherService'
 import { getCurrentLocationString } from '../../services/locationService'
 import { CurrentWeather, ForecastDay, HistoricalWeatherData } from '../../types'
 import { Card } from '../Card'
+import { LoadingSpinner } from '../LoadingSpinner'
 import { ErrorMessage } from '../ErrorMessage'
 import { CurrentWeatherDisplay } from './CurrentWeatherDisplay'
 import { ForecastWeatherDisplay } from './ForecastWeatherDisplay'
@@ -26,6 +27,8 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedDay, setSelectedDay] = useState<ForecastDay | null>(null)
   const [error, setError] = useState<Error | null>(null)
+  const [hasInitialData, setHasInitialData] = useState<boolean>(false)
+  const [fetchingNewData, setFetchingNewData] = useState<boolean>(false)
 
   // Initialize location from geolocation on first mount
   useEffect(() => {
@@ -47,7 +50,6 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
   }, [locationInitialized])
 
   useEffect(() => {
-
     if (!location) {
       setCurrent(null)
       setForecast(null)
@@ -62,7 +64,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
 
     const fetchData = async () => {
 
-      setLoading
+      setFetchingNewData(true)
       setError(null)
 
       try {
@@ -75,7 +77,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
 
         // Only update state if the request wasn't aborted and all data is available.
         if (!signal.aborted && currentData && forecastData && historyData) {
-          
+
           // If all succeed, update the state at once. Batch updates.
           // historyData is guaranteed to have exactly 5 elements since we request 5 days
           const filteredHistory = filterHistoricalDataByLocalTime(
@@ -88,19 +90,25 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
           setHistory(filteredHistory)
           setDateAtLocation(formatDateDdMmYyyy(currentData.localTime))
           setSelectedDay(null)
-        }
 
+          // Only set loading to false on initial data load
+          if (!hasInitialData) {
+            setHasInitialData(true)
+            setLoading(false)
+          }
+        }
       } catch (err) {
         // Ignore AbortError, as it's an expected part of the cleanup process.
         if ((err as Error).name !== 'AbortError') {
           setError(err as Error)
+          // Set loading to false on error if it's the initial load
+          if (!hasInitialData) {
+            setHasInitialData(true)
+            setLoading(false)
+          }
         }
       } finally {
-        // Only stop loading if the request wasn't aborted.
-        // If it was, a new request has likely started.
-        if (!signal.aborted) {
-          setLoading(false)
-        }
+        setFetchingNewData(false)
       }
     }
 
@@ -122,20 +130,12 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
     }
   }, [dateAtLocation])
 
-  // if (loading) {
-  //   return <LoadingSpinner message={`Loading weather for ${location}...`} />
-  // }
-
-  if (error) {
+  if (!current && error) {
     return <ErrorMessage title="Failed to fetch weather" message={error.message} />
   }
 
-  if (!current) {
-    return (
-      <Card>
-        <p>Enter a location to see the weather.</p>
-      </Card>
-    )
+  if (loading) {
+    return <LoadingSpinner message={`Loading weather for ${location}...`} />
   }
 
   return (
@@ -146,15 +146,17 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
               {selectedDay ? (
                 <ForecastWeatherDisplay day={selectedDay} />
               ) : (
-                <CurrentWeatherDisplay weather={current} />
+                <CurrentWeatherDisplay weather={current!} />
               )}
             </div>
           </div>
           <div className='col-span-1'>
             <div className="p-5 md:p-15">
-              <Location 
-                weather={current} 
-                onLocationChange={setLocation} 
+              <Location
+                weather={current!}
+                onLocationChange={setLocation}
+                fetchingNewData={fetchingNewData}
+                fetchingDataError={!!error && hasInitialData}
               />
             </div>
           </div>

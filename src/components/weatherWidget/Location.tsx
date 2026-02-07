@@ -6,9 +6,17 @@ import { getCountryFlag } from '../../utils/countryFlag'
 interface LocationProps {
   weather: CurrentWeather
   onLocationChange: (location: string) => void
+  fetchingNewData?: boolean
+  fetchingDataError?: boolean
 }
 
-export const Location: React.FC<LocationProps> = ({ weather, onLocationChange }) => {
+export const Location: React.FC<LocationProps> = ({ 
+    weather, 
+    onLocationChange,
+    fetchingNewData,
+    fetchingDataError
+}) => {
+
   const [searchInput, setSearchInput] = useState<string>('')
 
   const handleSearch = (e: React.FormEvent) => {
@@ -31,12 +39,16 @@ export const Location: React.FC<LocationProps> = ({ weather, onLocationChange })
             placeholder="Enter location..."
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <Button variant='primary' size='md' onClick={handleSearch}>
-            Search
+          <Button 
+            isLoading={fetchingNewData}
+            variant='primary' 
+            size='md' 
+            onClick={handleSearch}>
+                Search
           </Button>
         </form>
+        { fetchingDataError && <p className="text-red-500 text-xs mt-2">Failed to fetch weather data. Please try again.</p> }
       </div>
-
       <div className="space-y-3">
         <h3 className="font-bold text-md mb-3">Current Location</h3>
         <div className="flex justify-between border-b border-gray-300 py-2">
