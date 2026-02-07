@@ -134,7 +134,7 @@ export function WeatherWidget ({ initialLocation = 'London' }: WeatherWidgetProp
     return <ErrorMessage title='Failed to fetch weather' message={error.message} />
   }
 
-  if (loading) {
+  if (loading || !locationInitialized) {
     return <LoadingSpinner message={`Loading weather for ${location}...`} />
   }
 

@@ -54,7 +54,7 @@ export function transformCurrentWeather(data: any): CurrentWeather {
     icon: current.condition?.icon ? `https:${current.condition.icon}` : '',
     humidity: current.humidity,
     precipitation: current.precip_mm,
-    chanceOfRain: current.chance_of_rain,
+    chanceOfRain: current.chance_of_rain || 0,
     windSpeed: current.wind_kph,
     windDirection: current.wind_degree,
     pressure: current.pressure_mb,
