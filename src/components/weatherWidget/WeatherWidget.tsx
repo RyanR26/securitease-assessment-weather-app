@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { getCurrentWeather, getForecastWeather, getHistoricalWeather, filterHistoricalDataByLocalTime } from '../../services/weatherService'
+import { getCurrentLocationString } from '../../services/locationService'
 import { CurrentWeather, ForecastDay, HistoricalWeatherData } from '../../types'
 import { Card } from '../Card'
 import { LoadingSpinner } from '../LoadingSpinner'
@@ -17,6 +18,7 @@ interface WeatherWidgetProps {
 export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 'London' }) => {
 
   const [location, setLocation] = useState<string>(initialLocation)
+  const [locationInitialized, setLocationInitialized] = useState<boolean>(false)
   const [current, setCurrent] = useState<CurrentWeather | null>(null)
   const [forecast, setForecast] = useState<ForecastDay[] | null>(null)
   const [history, setHistory] = useState<ForecastDay[] | null>(null)
@@ -24,6 +26,25 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedDay, setSelectedDay] = useState<ForecastDay | null>(null)
   const [error, setError] = useState<Error | null>(null)
+
+  // Initialize location from geolocation on first mount
+  useEffect(() => {
+    if (locationInitialized) {
+      return
+    }
+
+    const initializeLocation = async () => {
+      const userLocation = await getCurrentLocationString()
+
+      if (userLocation) {
+        setLocation(userLocation)
+      }
+      // If userLocation is null, keep the default initialLocation
+      setLocationInitialized(true)
+    }
+
+    initializeLocation()
+  }, [locationInitialized])
 
   useEffect(() => {
 
