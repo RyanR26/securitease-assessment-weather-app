@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import { ForecastDay } from '../../types'
 import { formatDateDdMmYyyy, formatDateToWeekday } from '@/utils/date'
 
@@ -9,22 +9,42 @@ interface ForecastCarouselProps {
   onDaySelect: (day: ForecastDay) => void
 }
 
-export const ForecastCarousel: React.FC<ForecastCarouselProps> = ({ 
-  days, 
-  selectedDate, 
-  dateAtLocation, 
-  onDaySelect 
+export const ForecastCarousel: React.FC<ForecastCarouselProps> = ({
+  days,
+  selectedDate,
+  dateAtLocation,
+  onDaySelect
 }) => {
+  
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const selectedDayRef = useRef<HTMLDivElement>(null)
+
+  // Snap to center when a day is selected
+  useEffect(() => {
+    if (selectedDayRef.current && scrollContainerRef.current) {
+      selectedDayRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      })
+    }
+  }, [selectedDate])
+
+  const handleDayClick = (day: ForecastDay) => {
+    onDaySelect(day)
+  }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto" ref={scrollContainerRef}>
       <div className="flex gap-4 pb-4">
         {days.map((day) => (
-          <div key={day.date}
-            onClick={() => onDaySelect(day)}
+          <div
+            key={day.date}
+            ref={selectedDate === day.date ? selectedDayRef : null}
+            onClick={() => handleDayClick(day)}
             className={
               `flex-shrink-0 w-40 rounded-lg border p-4 bg-white hover:shadow-lg transition-all cursor-pointer
-              ${!selectedDate && dateAtLocation === formatDateDdMmYyyy(day.date) ? 'border-green-500 border-2 shadow-lg' : ''} 
+              ${!selectedDate && dateAtLocation === formatDateDdMmYyyy(day.date) ? 'border-green-500 border-2 shadow-lg' : ''}
               ${selectedDate === day.date ? 'border-blue-500 border-2 shadow-lg' : 'border-gray-200'}`
             }>
             <p className="text-sm text-gray-600">{formatDateDdMmYyyy(day.date)}</p>
