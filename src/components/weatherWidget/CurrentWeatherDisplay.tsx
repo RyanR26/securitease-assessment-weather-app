@@ -13,9 +13,9 @@ export const CurrentWeatherDisplay: React.FC<CurrentWeatherProps> = ({ weather }
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
             <div className="flex flex-col justify-between gap-4">
                 <div className='flex flex-col items-center'>
-                    <p className='text-sm'>{formatDateDdMmYyyy(new Date())}</p>
+                    <p className='text-sm'>{formatDateDdMmYyyy(new Date(weather.localTime))}</p>
                     <p className='font-bold'>Today</p>
-                    <p className="text-xs bg-gray-200 p-1 rounded-lg text-center text-gray-700 mt-2">Current Weather</p>
+                    <p className="text-xs bg-green-500 p-1 rounded-lg text-center text-white mt-2">Current Weather</p>
                 </div>
                 <div className="flex flex-col items-center border-b border-t border-gray-300 pb-4">
                     <div className=' rounded-lg p-2 flex flex-col items-center w-8/10'>
@@ -33,7 +33,7 @@ export const CurrentWeatherDisplay: React.FC<CurrentWeatherProps> = ({ weather }
                 </div>
                 <div>
                     <p className='text-xs mb-1'>Time in {weather.location}</p>
-                    <Clock timeZone={weather.timeZoneId} classNames='text-sm' />
+                    <Clock timeZone={weather.timeZoneId} classNames='text-sm font-bold' />
                 </div>
             </div>
             <div className="text-xs font-bold">
