@@ -22,7 +22,7 @@ const DEFAULT_CACHE_DURATION_MS = 10 * 60 * 1000
 /**
  * Creates a namespaced cache key
  * @param key - The cache key
- * @returns The namespaced key (e.g., "weather-app-cache:London")
+ * @returns The namespaced key (e.g., 'weather-app-cache:London')
  */
 function getNamespacedKey(key: string): string {
   return `${CACHE_NAMESPACE}:${key}`
@@ -60,7 +60,7 @@ export function getCachedData<T>(key: string): T | null {
 
     return entry.data
   } catch (error) {
-    console.warn(`Error reading cache for key "${key}":`, error)
+    console.warn(`Error reading cache for key '${key}':`, error)
     return null
   }
 }
@@ -81,7 +81,7 @@ export function setCachedData<T>(key: string, data: T): void {
     }
     localStorage.setItem(namespacedKey, JSON.stringify(entry))
   } catch (error) {
-    console.warn(`Error writing cache for key "${key}":`, error)
+    console.warn(`Error writing cache for key '${key}':`, error)
   }
 }
 
@@ -96,7 +96,7 @@ export function clearCache(key: string): void {
     const namespacedKey = getNamespacedKey(key)
     localStorage.removeItem(namespacedKey)
   } catch (error) {
-    console.warn(`Error clearing cache for key "${key}":`, error)
+    console.warn(`Error clearing cache for key '${key}':`, error)
   }
 }
 
@@ -146,7 +146,7 @@ export function getCacheAge(key: string): number | null {
     const entry: CacheEntry<unknown> = JSON.parse(cached)
     return Date.now() - entry.timestamp
   } catch (error) {
-    console.warn(`Error getting cache age for key "${key}":`, error)
+    console.warn(`Error getting cache age for key '${key}':`, error)
     return null
   }
 }
@@ -175,7 +175,7 @@ export function isCacheValid(key: string): boolean {
 
     return age <= DEFAULT_CACHE_DURATION_MS
   } catch (error) {
-    console.warn(`Error checking cache validity for key "${key}":`, error)
+    console.warn(`Error checking cache validity for key '${key}':`, error)
     return false
   }
 }

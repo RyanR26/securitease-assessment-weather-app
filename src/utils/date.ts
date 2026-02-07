@@ -17,7 +17,7 @@ export const formatDateDdMmYyyy = (date: Date | string): string => {
 }
 
 /**
- * Formats a date to its full weekday name (e.g., "Monday", "Tuesday")
+ * Formats a date to its full weekday name (e.g., 'Monday', 'Tuesday')
  * @param date - Date object or ISO date string (YYYY-MM-DD)
  * @returns Full weekday name in en-GB locale
  * @example

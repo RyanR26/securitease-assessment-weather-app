@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { getCurrentTimeByTimeZone } from '@/utils/date'
 
 interface ClockProps {
-    timeZone: string
-    classNames?: string
+  timeZone: string
+  classNames?: string
 }
 
-export const Clock: React.FC<ClockProps> = ({ timeZone, classNames }) => {
-    const [time, setTime] = useState<string>(() => getCurrentTimeByTimeZone(timeZone))
+export function Clock({
+  timeZone,
+  classNames
+}: ClockProps) {
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setTime(getCurrentTimeByTimeZone(timeZone))
-        }, 1000)
+  const [time, setTime] = useState<string>(() => getCurrentTimeByTimeZone(timeZone))
 
-        return () => clearInterval(interval)
-    }, [timeZone])
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(getCurrentTimeByTimeZone(timeZone))
+    }, 1000)
 
-    return <div className={`${classNames}`}>{time}</div>
+    return () => clearInterval(interval)
+  }, [timeZone])
+
+  return <div className={`${classNames}`}>{time}</div>
 }

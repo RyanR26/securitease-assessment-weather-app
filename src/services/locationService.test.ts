@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { getUserLocation, getLocationFromCoordinates, getCurrentLocationString } from './locationService'
+import { getUserLocation, getLocationFromCoordinates, getCurrentLocationString } from '@/services/locationService'
 
 describe('locationService', () => {
   beforeEach(() => {

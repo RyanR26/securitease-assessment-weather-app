@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { getCachedData, setCachedData, clearCache, clearAllCache, getCacheAge, isCacheValid } from './cacheService'
+import { getCachedData, setCachedData, clearCache, clearAllCache, getCacheAge, isCacheValid } from '@/services/cacheService'
 
 describe('cacheService', () => {
   beforeEach(() => {

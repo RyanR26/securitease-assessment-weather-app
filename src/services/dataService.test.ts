@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { getCurrentWeatherData, getForecastWeatherData, getHistoricalWeatherData } from './dataService'
-import * as weatherService from './weatherService'
-import { clearAllCache } from './cacheService'
+import { getCurrentWeatherData, getForecastWeatherData, getHistoricalWeatherData } from '@/services/dataService'
+import * as weatherService from '@/services/weatherService'
+import { clearAllCache } from '@/services/cacheService'
 
 vi.mock('./weatherService')
 

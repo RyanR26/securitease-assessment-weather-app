@@ -1,6 +1,6 @@
 import { CurrentWeather, ForecastDay } from '@/types'
-import { getCurrentWeather, getForecastWeather, getHistoricalWeather } from './weatherService'
-import { getCachedData, setCachedData } from './cacheService'
+import { getCurrentWeather, getForecastWeather, getHistoricalWeather } from '@/services/weatherService'
+import { getCachedData, setCachedData } from '@/services/cacheService'
 
 /**
  * Gets current weather data with caching

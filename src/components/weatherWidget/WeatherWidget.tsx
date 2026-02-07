@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { getCurrentWeatherData, getForecastWeatherData, getHistoricalWeatherData } from '../../services/dataService'
-import { filterHistoricalDataByLocalTime } from '../../services/weatherService'
-import { getCurrentLocationString } from '../../services/locationService'
-import { CurrentWeather, ForecastDay, HistoricalWeatherData } from '../../types'
-import { Card } from '../Card'
-import { LoadingSpinner } from '../LoadingSpinner'
-import { ErrorMessage } from '../ErrorMessage'
-import { CurrentWeatherDisplay } from './CurrentWeatherDisplay'
-import { ForecastWeatherDisplay } from './ForecastWeatherDisplay'
-import { Location } from './Location'
-import { ForecastCarousel } from './ForecastCarousel'
+import { useState, useEffect, useCallback } from 'react'
 import { formatDateDdMmYyyy } from '@/utils/date'
+import { getCurrentWeatherData, getForecastWeatherData, getHistoricalWeatherData } from '@/services/dataService'
+import { filterHistoricalDataByLocalTime } from '@/services/weatherService'
+import { getCurrentLocationString } from '@/services/locationService'
+import { CurrentWeather, ForecastDay, HistoricalWeatherData } from '@/types'
+import { Card } from '@components/Card'
+import { LoadingSpinner } from '@components/LoadingSpinner'
+import { ErrorMessage } from '@components/ErrorMessage'
+import { CurrentWeatherDisplay } from '@/components/weatherWidget/CurrentWeatherDisplay'
+import { ForecastWeatherDisplay } from '@/components/weatherWidget/ForecastWeatherDisplay'
+import { LocationSearch } from '@/components/weatherWidget/LocationSearch'
+import { WeatherTimeline } from '@/components/weatherWidget/WeatherTimeline'
 
 interface WeatherWidgetProps {
   initialLocation?: string
 }
 
-export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 'London' }) => {
+export function WeatherWidget ({ initialLocation = 'London' }: WeatherWidgetProps) {
 
   const [location, setLocation] = useState<string>(initialLocation)
   const [locationInitialized, setLocationInitialized] = useState<boolean>(false)
@@ -131,7 +131,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
   }, [dateAtLocation])
 
   if (!current && error) {
-    return <ErrorMessage title="Failed to fetch weather" message={error.message} />
+    return <ErrorMessage title='Failed to fetch weather' message={error.message} />
   }
 
   if (loading) {
@@ -139,10 +139,10 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
   }
 
   return (
-      <div className="space-y-8">
+      <div className='space-y-8'>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <div className='col-span-1'>
-            <div className="bg-white rounded-xl border-2 border-yellow-500 p-6">
+          <div className='col-span-1 order-last md:order-first'>
+            <div className='bg-white rounded-xl border-2 border-yellow-500 p-6'>
               {selectedDay ? (
                 <ForecastWeatherDisplay day={selectedDay} />
               ) : (
@@ -151,8 +151,8 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
             </div>
           </div>
           <div className='col-span-1'>
-            <div className="p-5 md:p-15">
-              <Location
+            <div className='p-5 md:p-15'>
+              <LocationSearch
                 weather={current!}
                 onLocationChange={setLocation}
                 fetchingNewData={fetchingNewData}
@@ -162,8 +162,8 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
           </div>
         </div>
         {history && forecast && (
-          <Card title="Weather Timeline">
-            <ForecastCarousel
+          <Card title='Weather Timeline'>
+            <WeatherTimeline
               days={[...(history || []), ...(forecast || [])]}
               selectedDate={selectedDay?.date}
               dateAtLocation={dateAtLocation}

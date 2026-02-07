@@ -44,10 +44,10 @@ export async function getUserLocation(): Promise<{ latitude: number; longitude: 
  * Uses reverse geocoding via the weather API to get the location name
  * @param latitude - Latitude coordinate
  * @param longitude - Longitude coordinate
- * @returns Promise that resolves to location string (e.g., "London, United Kingdom") or null if lookup fails
+ * @returns Promise that resolves to location string (e.g., 'London, United Kingdom') or null if lookup fails
  * @example
  * const location = await getLocationFromCoordinates(51.5085, -0.1257)
- * // Returns: "London, United Kingdom"
+ * // Returns: 'London, United Kingdom'
  */
 export async function getLocationFromCoordinates(
   latitude: number,
@@ -99,7 +99,7 @@ export async function getLocationFromCoordinates(
  * @returns Promise that resolves to location string or null if unavailable
  * @example
  * const location = await getCurrentLocationString()
- * // Returns: "London, United Kingdom" or null
+ * // Returns: 'London, United Kingdom' or null
  */
 export async function getCurrentLocationString(): Promise<string | null> {
   try {

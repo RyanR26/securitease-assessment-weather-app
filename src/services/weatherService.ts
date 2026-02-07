@@ -92,7 +92,7 @@ export function transformForecastDay(data: any): ForecastDay {
  * Filters historical weather data based on the local time
  * Returns the most relevant 3 days of historical data depending on whether the local time is in the past, present, or future
  * @param data - Tuple of exactly 5 already-transformed ForecastDay objects (historical data)
- * @param localTime - Local time string in format "YYYY-MM-DD HH:MM:SS" or "YYYY-MM-DD"
+ * @param localTime - Local time string in format 'YYYY-MM-DD HH:MM:SS' or 'YYYY-MM-DD'
  * @returns Filtered array of 3 ForecastDay objects
  * @example
  * // If localTime is in the future, returns the last 3 days

@@ -18,9 +18,9 @@ export interface CurrentWeather {
   temperature: number
   /** Temperature in Fahrenheit */
   temperatureF: number
-  /** "Feels like" temperature in Celsius */
+  /** 'Feels like' temperature in Celsius */
   feelsLike: number
-  /** Weather condition (e.g., "Sunny", "Rainy", "Cloudy") */
+  /** Weather condition (e.g., 'Sunny', 'Rainy', 'Cloudy') */
   condition: string
   /** Weather condition icon/code */
   icon: string
