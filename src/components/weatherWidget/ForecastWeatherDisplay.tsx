@@ -13,7 +13,7 @@ export const ForecastWeatherDisplay: React.FC<ForecastWeatherDisplayProps> = ({ 
         <div className='flex flex-col items-center'>
           <p className='text-sm'>{formatDateDdMmYyyy(day.date)}</p>
           <p className='font-bold'>{formatDateToWeekday(day.date)}</p>
-          <p className="text-xs bg-blue-200 p-1 rounded-lg text-center text-blue-700 mt-2">
+          <p className="text-xs bg-blue-200 py-1 px-2 rounded-full text-center text-blue-700 mt-2">
             Forecast
           </p>
         </div>

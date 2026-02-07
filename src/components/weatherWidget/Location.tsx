@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { CurrentWeather } from '../../types'
 import { Button } from '../Button'
+import { getCountryFlag } from '../../utils/countryFlag'
 
 interface LocationProps {
   weather: CurrentWeather
@@ -44,7 +45,10 @@ export const Location: React.FC<LocationProps> = ({ weather, onLocationChange })
         </div>
         <div className="flex justify-between border-b border-gray-300 py-2">
           <dt className="font-semibold">Country:</dt>
-          <dd>{weather.country}</dd>
+          <dd className="flex items-center gap-2">
+            <span>{getCountryFlag(weather.country)}</span>
+            <span>{weather.country}</span>
+          </dd>
         </div>
         <div className="flex justify-between border-b border-gray-300 py-2">
           <dt className="font-semibold">Latitude:</dt>

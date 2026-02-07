@@ -15,7 +15,7 @@ export const CurrentWeatherDisplay: React.FC<CurrentWeatherProps> = ({ weather }
                 <div className='flex flex-col items-center'>
                     <p className='text-sm'>{formatDateDdMmYyyy(new Date(weather.localTime))}</p>
                     <p className='font-bold'>Today</p>
-                    <p className="text-xs bg-green-500 p-1 rounded-lg text-center text-white mt-2">Current Weather</p>
+                    <p className="text-xs bg-green-500 py-1 px-2 rounded-full text-center text-white mt-2">Current Weather</p>
                 </div>
                 <div className="flex flex-col items-center border-b border-t border-gray-300 pb-4">
                     <div className=' rounded-lg p-2 flex flex-col items-center w-8/10'>
