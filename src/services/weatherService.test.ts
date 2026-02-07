@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { getCurrentWeather, getForecastWeather, getHistoricalWeather, filterHistoricalDataByLocalTime } from './weatherService'
+import { clearAllCache } from './cacheService'
 import type { ForecastDay } from '@/types'
 
 describe('weatherService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    clearAllCache()
   })
 
   afterEach(() => {

@@ -199,7 +199,7 @@ export async function getForecastWeather(
       }
       throw new Error(error.message)
     }
-    
+
     if (!data?.forecast?.forecastday.length) {
       throw new Error('Missing forecast data')
     }
@@ -229,14 +229,14 @@ export async function getHistoricalWeather(
     const baseUrl = getBaseUrl()
     const apiKey = getApiKey()
     const url = new URL(`${baseUrl}/history.json`)
-    
+
     // To accomodate different timezones, we need to get the current date in the location's timezone
     // To solve this we get historical data for 1 day before and 1 day after and then we can filter the data by timezone
     const endDate = new Date()
     endDate.setDate(endDate.getDate()) // yesterday
     const startDate = new Date()
     startDate.setDate(endDate.getDate() - (days - 1))
-    
+
     // Format YYYY-MM-DD
     const formatDate = (date: Date) => date.toISOString().split('T')[0]
 

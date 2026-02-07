@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { getCurrentWeather, getForecastWeather, getHistoricalWeather, filterHistoricalDataByLocalTime } from '../../services/weatherService'
+import React, { useState, useEffect, useCallback } from 'react'
+import { getCurrentWeatherData, getForecastWeatherData, getHistoricalWeatherData } from '../../services/dataService'
+import { filterHistoricalDataByLocalTime } from '../../services/weatherService'
 import { getCurrentLocationString } from '../../services/locationService'
 import { CurrentWeather, ForecastDay, HistoricalWeatherData } from '../../types'
 import { Card } from '../Card'
-import { LoadingSpinner } from '../LoadingSpinner'
 import { ErrorMessage } from '../ErrorMessage'
 import { CurrentWeatherDisplay } from './CurrentWeatherDisplay'
 import { ForecastWeatherDisplay } from './ForecastWeatherDisplay'
@@ -62,15 +62,15 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
 
     const fetchData = async () => {
 
-      setLoading(true)
+      setLoading
       setError(null)
-      
+
       try {
         // Run all requests in parallel and wait for them to complete.
         const [currentData, forecastData, historyData] = await Promise.all([
-          getCurrentWeather(location, signal),
-          getForecastWeather(location, 4, signal),
-          getHistoricalWeather(location, 5, signal),
+          getCurrentWeatherData(location, signal),
+          getForecastWeatherData(location, 4, signal),
+          getHistoricalWeatherData(location, 5, signal),
         ])
 
         // Only update state if the request wasn't aborted and all data is available.
@@ -87,6 +87,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
           setForecast(forecastData)
           setHistory(filteredHistory)
           setDateAtLocation(formatDateDdMmYyyy(currentData.localTime))
+          setSelectedDay(null)
         }
 
       } catch (err) {
@@ -158,7 +159,6 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ initialLocation = 
             </div>
           </div>
         </div>
-
         {history && forecast && (
           <Card title="Weather Timeline">
             <ForecastCarousel
