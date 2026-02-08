@@ -1,11 +1,14 @@
 import { ForecastDay } from '@/types'
-import { formatDateDdMmYyyy, formatDateToWeekday } from '@/utils/date'
+import { formatDateDdMmYyyy, formatDateToWeekday, isAtLeastOneDayInPast } from '@/utils/date'
 
 interface ForecastWeatherDisplayProps {
   day: ForecastDay
 }
 
 export function ForecastWeatherDisplay({ day }: ForecastWeatherDisplayProps) {
+
+  const isHistorical = isAtLeastOneDayInPast(day.date)
+  const label = isHistorical ? 'Historical' : 'Forecast'
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 gap-8' key={day.date}>
@@ -14,7 +17,7 @@ export function ForecastWeatherDisplay({ day }: ForecastWeatherDisplayProps) {
           <p className='text-sm'>{formatDateDdMmYyyy(day.date)}</p>
           <p className='font-bold'>{formatDateToWeekday(day.date)}</p>
           <p className='text-xs bg-blue-200 py-1 px-2 rounded-full text-center text-blue-700 mt-2'>
-            Forecast
+            {label}
           </p>
         </div>
         <div className='flex flex-col items-center border-b border-t border-gray-300 pb-4'>
@@ -23,6 +26,7 @@ export function ForecastWeatherDisplay({ day }: ForecastWeatherDisplayProps) {
             <p className='text-center font-bold'>{day.condition}</p>
           </div>
           <div className='text-6xl font-bold mt-3 flex items-start justify-center gap-2 animate-fade-in'>
+            <span className='text-sm'>Avg</span>
             {day.avgTemp}
             <span className='text-2xl'>°C</span>
           </div>
@@ -34,7 +38,7 @@ export function ForecastWeatherDisplay({ day }: ForecastWeatherDisplayProps) {
         <div>
           <p className='text-xs mb-1'>Temperature Range</p>
           <p className='text-sm font-bold'>
-            {day.maxTemp}°C / {day.minTemp}°C
+            {day.minTemp}°C - {day.maxTemp}°C
           </p>
         </div>
       </div>

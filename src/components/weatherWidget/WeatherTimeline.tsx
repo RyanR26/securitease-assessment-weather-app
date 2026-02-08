@@ -30,10 +30,6 @@ export function WeatherTimeline({
     }
   }, [selectedDate])
 
-  const handleDayClick = (day: ForecastDay) => {
-    onDaySelect(day)
-  }
-
   return (
     <div className='overflow-x-auto' ref={scrollContainerRef}>
       <div className='flex gap-4 pb-4'>
@@ -41,9 +37,10 @@ export function WeatherTimeline({
           <div
             key={day.date}
             ref={selectedDate === day.date ? selectedDayRef : null}
-            onClick={() => handleDayClick(day)}
+            onClick={() => onDaySelect(day)}
             className={
-              `flex-shrink-0 w-40 rounded-lg border p-4 bg-white hover:shadow-lg transition-all cursor-pointer
+              `flex-shrink-0 w-40 rounded-lg border p-4  hover:shadow-lg transition-all cursor-pointer
+              ${dateAtLocation === formatDateDdMmYyyy(day.date) ? 'bg-green-100' : 'bg-white'}
               ${!selectedDate && dateAtLocation === formatDateDdMmYyyy(day.date) ? 'border-green-500 border-2 shadow-lg' : ''}
               ${selectedDate === day.date ? 'border-blue-500 border-2 shadow-lg' : 'border-gray-200'}`
             }>
