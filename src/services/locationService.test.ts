@@ -51,7 +51,7 @@ describe('locationService', () => {
     it('should return null when user denies permission', async () => {
       const mockError = new Error('User denied geolocation')
 
-      const mockGetCurrentPosition = vi.fn((success, error) => {
+      const mockGetCurrentPosition = vi.fn((_success, error) => {
         error(mockError)
       })
 
@@ -220,7 +220,7 @@ describe('locationService', () => {
     })
 
     it('should return null when geolocation fails', async () => {
-      const mockGetCurrentPosition = vi.fn((success, error) => {
+      const mockGetCurrentPosition = vi.fn((_success, error) => {
         error(new Error('Permission denied'))
       })
 
