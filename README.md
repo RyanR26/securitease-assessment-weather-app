@@ -1,4 +1,4 @@
-# Weather Forecast App
+# Forecasta - Weather Forecast App
 
 A modern, responsive weather forecast application built with React, TypeScript, and Tailwind CSS. Get real-time weather data, forecasts, and historical weather information for any location.
 
@@ -13,6 +13,10 @@ A modern, responsive weather forecast application built with React, TypeScript, 
 - **Smooth Animations** - Fade-in and slide animations for polished UX
 - **Caching** - Intelligent caching to reduce API calls
 - **Error Handling** - Graceful error messages and fallbacks
+
+## Screenshot
+
+![App screenshot](./assets/forecasta-screenshot.png)
 
 ## Tech Stack
 
